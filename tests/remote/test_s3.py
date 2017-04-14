@@ -7,7 +7,7 @@ import json
 import pytest
 
 from moto import mock_s3
-from hypothesis import given
+from hypothesis import given, settings
 
 from ati.errors import InvalidRemoteError
 from ati.remote import s3_remote_state as s3rs
@@ -43,6 +43,7 @@ def mockcredentials(tmpdir_factory):
 
 
 @mock_s3
+@settings(perform_health_check=False)
 @given(init_state=remote_init_st())
 def test_get_remote_state(init_state, monkeypatch, mockcredentials):
     def mockcreds(path):
@@ -56,7 +57,7 @@ def test_get_remote_state(init_state, monkeypatch, mockcredentials):
 
     conn.create_bucket(Bucket=bucket_name)
 
-    monkeypatch.setattr(os.path, 'expanduser', mockcreds)
+    #monkeypatch.setattr(os.path, 'expanduser', mockcreds)
     with open('tests/fixtures/remote_state.json', 'r') as f:
         remote_state_contents = f.read()
 
